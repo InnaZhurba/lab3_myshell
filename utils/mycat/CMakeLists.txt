@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.15)
 
 #! CHANGE YOUR PROJECT NAME
 #  It is used as your project's main executable name. 
-set(PROJECT_NAME myshell)
+set(PROJECT_NAME mycat)
 project(${PROJECT_NAME} C CXX) # project(${PROJECT_NAME} C CXX ASM)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -53,13 +53,10 @@ include(cmake/CompilerWarnings.cmake)
 ##########################################################
 # Project files, packages, libraries and so on
 ##########################################################
-#! add subdirectories for external commands
-add_subdirectory(utils/mycat)
-
 
 #! Project main executable source compilation
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-add_executable(${PROJECT_NAME} mybash_main.cpp
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+add_executable(${PROJECT_NAME} mycat.cpp
 				options_parser/options_parser.cpp options_parser/options_parser.h)
 
 #! Put path to your project headers
@@ -68,10 +65,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE options_parser)
 #! Add external packages
 # options_parser requires boost::program_options library
 find_package(Boost 1.71.0 COMPONENTS program_options system REQUIRED)
-
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} Boost::program_options Boost::system)
 
+						
 ##########################################################
 # Fixed CMakeLists.txt part 
 ##########################################################
