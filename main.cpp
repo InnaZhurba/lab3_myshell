@@ -65,44 +65,150 @@ int main() {//(int argc, char *argv[], char* envp[]) {
 
         argv[args.size()] = NULL;
 
-        if ( strcmp( command, "exit" ) == 0 )
+        if ( strcmp( command, "mexit" ) == 0 )
         {
             return 0;
         }
         else
         {
-            if (!strcmp (prog, "cd"))
-            {
-                if (argv[1] == NULL)
-                {
-                    chdir ("/");
-                }
-                else
-                {
-                    chdir (argv[1]);
-                }
-                perror (command);
-            }
             if ( !strcmp (prog, "merrno") ){
                 std::cout << merrno << std::endl;
                 perror (command);
             }
-            if ( !strcmp (prog, "mpwd") ){
+            else if ( !strcmp (prog, "mpwd") ){
                 std::cout << get_current_dir_name() << std::endl;
                 perror (command);
             }
+            else if ( !strcmp (prog, "mecho") ) {
+                // if there is $ in the string then we need to replace it with the value of the variable
+                // if there is no $ then we just print the string
+                // if there is no variable with such name then we print nothing
+                // implement it
+                if (argv[1] == NULL)
+                {
+                    std::cout << std::endl;
+                }
+                else
+                {
+                    int num = 1;
+                    while (argv[num]!=NULL) {
+                        std::string str = argv[num];
+                        if (str[0] == '$') {
+                            char *env = getenv(str.substr(1).c_str());
+                            if (env != NULL) {
+                                std::cout << env << " ";
+                            }
+                        } else {
+                            std::cout << str << " ";
+                        }
+                        num++;
+                    }
 
-            else
-            {
+                    std::cout << std::endl;
+                }
+                merrno = 0;
+            }
+            else if ( !strcmp (prog, "mexport") ) {
+                // if there is no variable with such name then we create it
+                // if there is variable with such name then we change its value
+                // implement it
+                if (argv[1] == NULL)
+                {
+                    merrno = 1;
+                }
+                else
+                {
+                    std::string str = argv[1];
+                    std::string name = str.substr(0, str.find('='));
+                    std::string value = str.substr(str.find('=') + 1);
+                    setenv(name.c_str(), value.c_str(), 1);
+                    merrno = 0;
+                }
+            }
+            else if ( !strcmp (prog, "mcd")) {
+                //implementation of cd command
+                //know about ~ and ..
+                if (argv[1] == NULL) {
+                    merrno = 1;
+                }
+                else {
+                    std::string str = argv[1];
+                    if (str[0] == '~') {
+                        str = getenv("HOME") + str.substr(1);
+                    }
+                    if (chdir(str.c_str()) == -1) {
+                        merrno = 1;
+                    } else {
+                        merrno = 0;
+                    }
+                }
+            }
+                //run smth with command run
+            else if ( !strcmp (prog, "mrun") ) {
+                // if there is no script with such name then we print error
+                // if there is script with such name then we run it
+                // implement it
+                if (argv[1] == NULL)
+                {
+                    merrno = 1;
+                }
+                else
+                {
+                    std::string str = argv[1];
+                    if (str[0] == '~') {
+                        str = getenv("HOME") + str.substr(1);
+                    }
+                    if (chdir(str.c_str()) == -1) {
+                        merrno = 1;
+                    } else {
+                        merrno = 0;
+                    }
+                }
+            }
+                //run .msh file script
+            else if ( !strcmp (prog, ".") ) {
+                // if there is no script with such name then we print error
+                // if there is script with such name then we run it
+                // implement it
+                if (argv[1] == NULL)
+                {
+                    merrno = 1;
+                }
+                else
+                {
+                    std::string str = argv[1];
+                    if (str[0] == '~') {
+                        str = getenv("HOME") + str.substr(1);
+                    }
+                    if (chdir(str.c_str()) == -1) {
+                        merrno = 1;
+                    } else {
+                        merrno = 0;
+                    }
+                }
+            }
+            else if ( !strcmp (prog, "mhelp") ) {
+                // print help
+                // implement it
+                std::cout << "mexit - exit from shell" << std::endl;
+                std::cout << "merrno - print last error code" << std::endl;
+                std::cout << "mpwd - print current directory" << std::endl;
+                std::cout << "mecho - print string" << std::endl;
+                std::cout << "mexport - export variable" << std::endl;
+                std::cout << "mcd - change directory" << std::endl;
+                std::cout << "mrun - run script" << std::endl;
+                std::cout << ".<name> - print history of commands" << std::endl;
+                std::cout << "mhelp - print help" << std::endl;
+                merrno = 0;
+            }
+            else {
                 pid_t kidpid = fork();
 
-                if (kidpid < 0)
-                {
+                if (kidpid < 0) {
                     perror( "Internal error: cannot fork." );
                     return -1;
                 }
-                else if (kidpid == 0)
-                {
+                else if (kidpid == 0) {
                     // the child.
                     execvp (prog, argv);
 
@@ -110,12 +216,10 @@ int main() {//(int argc, char *argv[], char* envp[]) {
                     perror( command );
                     return -1;
                 }
-                else
-                {
+                else {
                     waitpid( kidpid, &merrno, 0 );
                     // the parent.  is waiting for the child.
-                    if ( merrno < 0 )
-                    {
+                    if ( merrno < 0 ) {
                         perror( "Internal error: cannot wait for child." );
                         return -1;
                     }
@@ -123,7 +227,5 @@ int main() {//(int argc, char *argv[], char* envp[]) {
             }
         }
     }
-
-    return 0;
 }
 
