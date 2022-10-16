@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "options_parser.h"
+#include "include/internal_cmd.h"
 
 std::string chararr_to_string(char *argv[]) {
     std::string str;
@@ -30,16 +31,8 @@ char *get_current_dir_name() {
 
 // implement fork and exec
 int main() {//(int argc, char *argv[], char* envp[]) {
-    // command_line_options_t command_line_options{argc, argv};
-    // std::cout << "A flag value: " << command_line_options.get_A_flag() << std::endl;
-
     //errno
     int merrno = 0;
-
-    //saving history of the commands in vector
-    //!!!!!! save only if there are no errors
-    std::vector<std::string> history;
-    //history.push_back(chararr_to_string(argv));
 
     while (true) {
         // Show prompt.
@@ -47,10 +40,12 @@ int main() {//(int argc, char *argv[], char* envp[]) {
         char command[128];
         std::cin.getline( command, 128 );
 
-        // saving history of the commands in vector
-        history.push_back(command);
+        //ignore everything after # in command
+        char* comment = strchr(command, '#');
+        if (comment != nullptr) {
+            *comment = '\0';
+        }
 
-        // splitting string into tokens
         std::vector<char*> args;
         char* prog = strtok( command, " " );
         char* tmp = prog;
@@ -80,112 +75,21 @@ int main() {//(int argc, char *argv[], char* envp[]) {
                 perror (command);
             }
             else if ( !strcmp (prog, "mecho") ) {
-                // if there is $ in the string then we need to replace it with the value of the variable
-                // if there is no $ then we just print the string
-                // if there is no variable with such name then we print nothing
-                // implement it
-                if (argv[1] == NULL)
-                {
-                    std::cout << std::endl;
-                }
-                else
-                {
-                    int num = 1;
-                    while (argv[num]!=NULL) {
-                        std::string str = argv[num];
-                        if (str[0] == '$') {
-                            char *env = getenv(str.substr(1).c_str());
-                            if (env != NULL) {
-                                std::cout << env << " ";
-                            }
-                        } else {
-                            std::cout << str << " ";
-                        }
-                        num++;
-                    }
-
-                    std::cout << std::endl;
-                }
-                merrno = 0;
+                merrno = mecho(argv);
             }
             else if ( !strcmp (prog, "mexport") ) {
-                // if there is no variable with such name then we create it
-                // if there is variable with such name then we change its value
-                // implement it
-                if (argv[1] == NULL)
-                {
-                    merrno = 1;
-                }
-                else
-                {
-                    std::string str = argv[1];
-                    std::string name = str.substr(0, str.find('='));
-                    std::string value = str.substr(str.find('=') + 1);
-                    setenv(name.c_str(), value.c_str(), 1);
-                    merrno = 0;
-                }
+                merrno = mexport(argv);
             }
             else if ( !strcmp (prog, "mcd")) {
-                //implementation of cd command
-                //know about ~ and ..
-                if (argv[1] == NULL) {
-                    merrno = 1;
-                }
-                else {
-                    std::string str = argv[1];
-                    if (str[0] == '~') {
-                        str = getenv("HOME") + str.substr(1);
-                    }
-                    if (chdir(str.c_str()) == -1) {
-                        merrno = 1;
-                    } else {
-                        merrno = 0;
-                    }
-                }
+                merrno = mcd(argv);
             }
                 //run smth with command run
             else if ( !strcmp (prog, "mrun") ) {
-                // if there is no script with such name then we print error
-                // if there is script with such name then we run it
-                // implement it
-                if (argv[1] == NULL)
-                {
-                    merrno = 1;
-                }
-                else
-                {
-                    std::string str = argv[1];
-                    if (str[0] == '~') {
-                        str = getenv("HOME") + str.substr(1);
-                    }
-                    if (chdir(str.c_str()) == -1) {
-                        merrno = 1;
-                    } else {
-                        merrno = 0;
-                    }
-                }
+                merrno = mrun(argv);
             }
                 //run .msh file script
             else if ( !strcmp (prog, ".") ) {
-                // if there is no script with such name then we print error
-                // if there is script with such name then we run it
-                // implement it
-                if (argv[1] == NULL)
-                {
-                    merrno = 1;
-                }
-                else
-                {
-                    std::string str = argv[1];
-                    if (str[0] == '~') {
-                        str = getenv("HOME") + str.substr(1);
-                    }
-                    if (chdir(str.c_str()) == -1) {
-                        merrno = 1;
-                    } else {
-                        merrno = 0;
-                    }
-                }
+                merrno = dot_run(argv);
             }
             else if ( !strcmp (prog, "mhelp") ) {
                 // print help
