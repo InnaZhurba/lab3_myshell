@@ -38,32 +38,37 @@ int main() {//(int argc, char *argv[], char* envp[]) {
             *comment = '\0';
         }
 
-        std::vector<char*> args;
+        std::vector<char*> args_tmp, args;
         char* prog = strtok( command, " " );
         char* tmp = prog;
+        int i=0;
         while ( tmp != NULL ) {
-            args.push_back( tmp );
-            tmp = strtok( NULL, " " );
-        }
-        //showing the list of arguments
-        std::cout << "ARGS" << std::endl;
-        for (int i = 0; i < args.size(); ++i) {
-            std::cout << args[i] << std::endl;
-        }
+            //args.push_back( tmp );
+                auto argments = wildcard_search(tmp);//args[i]);
+                for( auto c : argments) {
+                    args_tmp.push_back(c);
+                }
 
-        //wildcard_search(args);
+            tmp = strtok( NULL, " " );
+            i++;
+        }
+        args.push_back(prog);
+        for( auto c : args_tmp) {
+            args.push_back(c);
+        }
 
         char** argv = new char*[args.size()+1];
-        for ( int k = 0; k < args.size(); k++ )
+        for ( int k = 0; k < args.size(); k++ ) {
             argv[k] = args[k];
-
+        }
         argv[args.size()] = NULL;
 
-        //show the list of arguments
-        std::cout << "ARGV" << std::endl;
+        //show argv
+        std::cout << "argv: ";
         for (int i = 0; i < args.size(); ++i) {
-            std::cout << argv[i] << std::endl;
+            std::cout << argv[i] << " ";
         }
+        std::cout << std::endl;
 
         if ( strcmp( command, "mexit" ) == 0 )
         {

@@ -4,6 +4,18 @@
 
 #include "../include/internal_cmd.h"
 
+
+std::vector<char *> wildcard_search (char command[]) {
+    glob_t globbuf;
+    std::vector<char*> args;
+    glob(command, 0, NULL, &globbuf);
+    for (int i = 0; i < globbuf.gl_pathc; i++) {
+        args.push_back(globbuf.gl_pathv[i]);
+        //std::cout << globbuf.gl_pathv[i] << std::endl;
+    }
+    return args;
+}
+
 void wildcard_search(std::vector<char*> &args) {
     // implement search by wildcards (glob) and replace the command with the list of files that match the pattern (glob)
     // (if there are no files that match the pattern, the command is not executed)
@@ -17,12 +29,18 @@ void wildcard_search(std::vector<char*> &args) {
     globfree(&globbuf);
     */
 
+    //show args
+    std::cout << "ARGS" << std::endl;
+    for (int i = 0; i < args.size(); ++i) {
+        std::cout << args[i] << std::endl;
+    }
     // new version
     glob_t globbuf;
     globbuf.gl_offs = 1;
     glob(args[0], GLOB_DOOFFS, NULL, &globbuf);
     args.clear();
     for (int i = 0; i < globbuf.gl_pathc; ++i) {
+        std::cout << globbuf.gl_pathv[i] << std::endl;
         args.push_back(globbuf.gl_pathv[i]);
     }
 }
@@ -40,6 +58,7 @@ int mecho (char** argv) {
     {
         int num = 1;
         while (argv[num]!=NULL) {
+
             std::string str = argv[num];
             if (str[0] == '$') {
                 char *env = getenv(str.substr(1).c_str());

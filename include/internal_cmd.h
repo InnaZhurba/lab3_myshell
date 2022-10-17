@@ -13,6 +13,7 @@
 #include "options_parser.h"
 #include <glob.h>
 
+std::vector<char *> wildcard_search (char command[]);
 void wildcard_search(std::vector<char*> &args);
 int mecho (char** argv);
 int mexport (char** argv);
