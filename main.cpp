@@ -62,7 +62,10 @@ int main() {//(int argc, char *argv[], char* envp[]) {
 
         if ( strcmp( command, "mexit" ) == 0 )
         {
-            return 0;
+            //return exit code from command
+            if (argv[1]==NULL)
+                return 0;
+            return atoi(argv[1]);
         }
         else
         {

@@ -1,6 +1,5 @@
 # Lab work 3: myshell
-Authors (team): Inna Zhurba [https://github.com/InnaZhurba]()<br>
-Variant: <mark>VARIANT SHOULD BE HERE</mark>
+Authors (team):<br>Inna Zhurba [https://github.com/InnaZhurba]()<br>Ilya Konstantynenko [https://github.com/Ikonsty]()<br>
 ## Prerequisites
 
 <mark>LIST LIBRARIES/TOOLS/OTHER UTILITIES THAT NEED TO BE INSTALLED (E.G. GCC, OPENMP, CMAKE ETC)</mark>
@@ -18,10 +17,22 @@ file and add your env to the `.gitignore` file!</mark>
 
 ### Usage
 
-<mark>PROVIDE AN EXAMPLE OF HOW TO RUN YOUR PROGRAM (IT CAN BE A_flag COMMAND LINE WITH INPUT AND EXPECTED OUTPUT)</mark>
+MAC OS:<br>
+1. open the folder with the project<br>
+2. open the build folder <br>
+3. run ./myshell<br>
+4. run mhelp and choose one of the proposed commands<br>
+5. for exit - run mexit<br>
 
-<mark>Note: if your project needs or generates any data, media and so on -- put them
-into the data folder</mark> 
+COMMANDS:<br>
+1. merrno - print last error code<br>
+2. mcd - change directory<br>
+3. mpwd - print current directory<br>
+4. mhelp - print help<br>
+5. mexit [код завершення] [-h|--help] - exit from shell<br>
+6. mecho [-h|--help] [text|$<var_name>] [text|$<var_name>]  [text|$<var_name>] ... - print arguments<br>
+7. mexport var_name=VAL - set environment variable<br>
+8. .<file.msh> - run script
 
 ### Important!
 
