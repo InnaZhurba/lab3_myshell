@@ -4,6 +4,29 @@
 
 #include "../include/internal_cmd.h"
 
+void wildcard_search(std::vector<char*> &args) {
+    // implement search by wildcards (glob) and replace the command with the list of files that match the pattern (glob)
+    // (if there are no files that match the pattern, the command is not executed)
+
+    // old version
+    /*glob_t globbuf;
+    glob(command, 0, NULL, &globbuf);
+    for (int i = 0; i < globbuf.gl_pathc; i++) {
+        std::cout << globbuf.gl_pathv[i] << std::endl;
+    }
+    globfree(&globbuf);
+    */
+
+    // new version
+    glob_t globbuf;
+    globbuf.gl_offs = 1;
+    glob(args[0], GLOB_DOOFFS, NULL, &globbuf);
+    args.clear();
+    for (int i = 0; i < globbuf.gl_pathc; ++i) {
+        args.push_back(globbuf.gl_pathv[i]);
+    }
+}
+
 int mecho (char** argv) {
     // if there is $ in the string then we need to replace it with the value of the variable
     // if there is no $ then we just print the string

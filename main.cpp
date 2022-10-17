@@ -6,17 +6,9 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <glob.h>
 #include "options_parser.h"
 #include "include/internal_cmd.h"
-
-std::string chararr_to_string(char *argv[]) {
-    std::string str;
-    for (int i = 0; argv[i] != nullptr; ++i) {
-        str += argv[i];
-        str += " ";
-    }
-    return str;
-}
 
 //implementation of the function get_current_dir_name() for Linux
 char *get_current_dir_name() {
@@ -53,12 +45,25 @@ int main() {//(int argc, char *argv[], char* envp[]) {
             args.push_back( tmp );
             tmp = strtok( NULL, " " );
         }
+        //showing the list of arguments
+        std::cout << "ARGS" << std::endl;
+        for (int i = 0; i < args.size(); ++i) {
+            std::cout << args[i] << std::endl;
+        }
+
+        //wildcard_search(args);
 
         char** argv = new char*[args.size()+1];
         for ( int k = 0; k < args.size(); k++ )
             argv[k] = args[k];
 
         argv[args.size()] = NULL;
+
+        //show the list of arguments
+        std::cout << "ARGV" << std::endl;
+        for (int i = 0; i < args.size(); ++i) {
+            std::cout << argv[i] << std::endl;
+        }
 
         if ( strcmp( command, "mexit" ) == 0 )
         {

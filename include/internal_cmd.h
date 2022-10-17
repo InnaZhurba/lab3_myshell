@@ -11,7 +11,9 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "options_parser.h"
+#include <glob.h>
 
+void wildcard_search(std::vector<char*> &args);
 int mecho (char** argv);
 int mexport (char** argv);
 int mcd (char** argv);
