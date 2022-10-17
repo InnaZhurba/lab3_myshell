@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <filesystem>
 
 #include "options_parser.h"
 #include "include/internal_cmd.h"
@@ -114,6 +115,9 @@ int main() {
                 std::cout << "mhelp - print help" << std::endl;
                 merrno = 0;
             }
+            else if (std::filesystem::path(argv[1]).extension() == ".msh") { // run scripts
+                cout << "Hello" << endl;
+            }
             else {
                 pid_t parent = getpid();
                 pid_t pid = fork();
@@ -122,11 +126,11 @@ int main() {
                     cerr << "Failed to fork()" << endl;
                     exit(EXIT_FAILURE);
                 } else if (pid > 0) {
-                    cout << "Parent: Hello from parent" << endl;
-                    cout << "Parent: Parent  PID: " << parent << ", child PID: " << pid << endl;
+//                    cout << "Parent: Hello from parent" << endl;
+//                    cout << "Parent: Parent  PID: " << parent << ", child PID: " << pid << endl;
                     int status;
                     waitpid(pid, &status, 0);
-                    cout << "Parent: child stopped, exit code: " << status << endl;
+//                    cout << "Parent: child stopped, exit code: " << status << endl;
                 } else {
                     string child_name = argv[0];
 
@@ -134,7 +138,6 @@ int main() {
                     args.push_back(child_name);
 
                     for(size_t a = 1; a < argc; ++a) {
-                        cout << argv[a] << endl;
                         args.push_back(argv[a]);
                     }
 
